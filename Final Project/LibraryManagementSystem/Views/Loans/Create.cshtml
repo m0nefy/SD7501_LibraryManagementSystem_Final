@@ -1,0 +1,24 @@
+@model Loan
+@{ ViewData["Title"] = "Borrow a book"; var books = (IEnumerable<Book>)ViewBag.Books; }<div class="form-shell">
+    <p class="eyebrow">CIRCULATION</p>
+    <h1>Borrow a book</h1>
+    <p class="text-muted">The standard loan period is 21 days.</p>
+    <form asp-action="Create" class="mt-4">
+      <div asp-validation-summary="ModelOnly" class="text-danger">
+      </div>
+    <div class="mb-3">
+      <label asp-for="ReaderName" class="form-label">Reader name</label>
+      <input asp-for="ReaderName" class="form-control" placeholder="Enter reader name" />
+      <span asp-validation-for="ReaderName" class="text-danger">
+      </span>
+  </div>
+<div class="mb-3">
+  <label asp-for="BookId" class="form-label">Book</label>
+  <select asp-for="BookId" class="form-select">
+    <option value="">Choose an available book...</option>@foreach (var b in books) { <option value="@b.Id">@b.Title - @b.AvailableCopies available</option> }</select>
+  <span asp-validation-for="BookId" class="text-danger">
+  </span>
+</div>
+<button class="btn btn-primary">Confirm borrow</button> <a asp-action="Index" class="btn btn-link">Cancel</a>
+</form>
+</div>

@@ -1,0 +1,50 @@
+@{
+    ViewData["Title"] = "Payment";
+    var items = (IEnumerable<CartLineViewModel>)ViewBag.Items;
+}
+
+<div class="form-shell">
+    <h1>Confirm payment</h1>
+    <p class="text-muted">Review your borrowing order. The order will only be created after payment succeeds.</p>
+    <ul class="mb-3">
+    @foreach (var item in items)
+    {
+        <li>@item.Book.Title × @item.Quantity — @((item.Book.BorrowingFee * item.Quantity).ToString("C"))</li>
+    }
+    </ul>
+    <h4 class="mb-3">Total: @(((decimal)ViewBag.Total).ToString("C"))</h4>
+    <form id="payment-form" method="post">
+        @Html.AntiForgeryToken()
+        <button id="payment-button" class="btn btn-primary" type="submit">Go to Stripe payment</button>
+        <a asp-controller="Cart" asp-action="Index" class="btn btn-link">Back to cart</a>
+    </form>
+    <small class="text-muted d-block mt-3">The borrowing order is created only after Stripe confirms successful payment.</small>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('payment-form').addEventListener('submit', async function (event) {
+            event.preventDefault();
+            const button = document.getElementById('payment-button');
+            const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+            button.disabled = true;
+            button.textContent = 'Opening payment...';
+
+            try {
+                const response = await fetch('/api/payment/create-checkout-session', {
+                    method: 'POST',
+                    headers: { 'RequestVerificationToken': token }
+                });
+                const result = await response.json();
+                if (!response.ok || !result.url) {
+                    throw new Error(result.message || 'Unable to start payment.');
+                }
+                window.location.href = result.url;
+            } catch (error) {
+                alert(error.message);
+                button.disabled = false;
+                button.textContent = 'Go to Stripe payment';
+            }
+        });
+    </script>
+}

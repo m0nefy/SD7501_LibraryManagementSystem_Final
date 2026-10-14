@@ -1,0 +1,30 @@
+@model Book
+@{ ViewData["Title"] = "Book details"; }<div class="form-shell">
+  <a asp-controller="Home" asp-action="Index">&larr; Back to search books</a>
+  <p class="eyebrow mt-4">BOOK DETAILS</p>
+  <h1>@Model.Title</h1>
+  <p class="lead">by @Model.Author</p>
+  <hr />
+  <dl class="row">
+    <dt class="col-sm-4">Category</dt>
+    <dd class="col-sm-8">@Model.Category?.Name</dd>
+    <dt class="col-sm-4">ISBN</dt>
+    <dd class="col-sm-8">@Model.ISBN</dd>
+    <dt class="col-sm-4">Stock</dt>
+    <dd class="col-sm-8">@Model.AvailableCopies available of @Model.TotalCopies</dd>
+    <dt class="col-sm-4">Borrowing fee</dt>
+    <dd class="col-sm-8">@Model.BorrowingFee.ToString("C")</dd>
+    <dt class="col-sm-4">Book price</dt>
+    <dd class="col-sm-8">@Model.Price.ToString("C")</dd>
+    <dt class="col-sm-4">Borrowing period</dt>
+    <dd class="col-sm-8">@Model.BorrowingPeriodDays days</dd>
+  </dl>
+@if (Model.AvailableCopies > 0)
+{
+    <form asp-controller="Cart" asp-action="Add" method="post" class="d-flex gap-2 align-items-end">
+        <input type="hidden" name="id" value="@Model.Id" />
+        <div><label class="form-label" for="quantity">Quantity</label><input class="form-control" id="quantity" name="quantity" type="number" min="1" max="@Model.AvailableCopies" value="1" /></div>
+        <button class="btn btn-primary">Add to cart</button>
+    </form>
+}
+</div>

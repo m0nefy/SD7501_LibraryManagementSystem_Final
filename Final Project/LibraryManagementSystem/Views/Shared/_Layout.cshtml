@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>@ViewData["Title"] - Library Hub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+      <link rel="stylesheet" href="~/css/site.css" />
+    </head>
+  <body>
+    <nav class="navbar navbar-expand-lg border-bottom bg-white">
+      <div class="container">
+        <a class="navbar-brand fw-bold" asp-controller="Home" asp-action="Index">
+          <span class="brand-mark">LH</span> Library Hub</a>
+        <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#nav">
+          <span class="navbar-toggler-icon">
+          </span>
+      </button>
+    <div id="nav" class="collapse navbar-collapse">
+      <div class="navbar-nav ms-auto">
+        <a class="nav-link" asp-controller="Home" asp-action="Index">Search books</a>
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+          <a class="nav-link" asp-controller="Cart" asp-action="Index">Cart</a>
+          <a class="nav-link" asp-controller="Orders" asp-action="Index">My orders</a>
+          @if (User.IsInRole("Administrator"))
+          {
+            <a class="nav-link" asp-controller="Orders" asp-action="Admin">Order review</a>
+            <a class="nav-link" asp-controller="Books" asp-action="Index">Manage books</a>
+            <a class="nav-link" asp-controller="Categories" asp-action="Index">Categories</a>
+            <a class="nav-link" asp-controller="Account" asp-action="RegisterAdministrator">New admin</a>
+          }
+          <form asp-controller="Account" asp-action="Logout" method="post" class="nav-item"><button class="nav-link btn btn-link">Logout (@User.Identity.Name)</button></form>
+        }
+        else
+        {
+          <a class="nav-link" asp-controller="Account" asp-action="Login">Login</a>
+          <a class="nav-link" asp-controller="Account" asp-action="Register">Register</a>
+        }
+      </div>
+  </div>
+</div>
+</nav>
+<main class="container py-4">@if (TempData["Success"] != null) { <div class="alert alert-success">@TempData["Success"]</div> } @if (TempData["Error"] != null) { <div class="alert alert-warning">@TempData["Error"]</div> } @RenderBody()</main>
+<footer class="border-top py-3 mt-5">
+  <div class="container text-muted small">Library Hub &middot; Assignment 2 by Ruifeng Li</div>
+</footer>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js">
+</script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js">
+</script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation-unobtrusive@4.0.0/dist/jquery.validate.unobtrusive.min.js">
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+</script>@await RenderSectionAsync("Scripts", required: false)</body>
+</html>

@@ -1,0 +1,21 @@
+@model IEnumerable<Category>
+  @{ ViewData["Title"] = "Categories"; }<div class="page-heading">
+    <div>
+      <p class="eyebrow">ADMINISTRATION</p>
+      <h1>Categories</h1>
+      <p class="text-muted">Organise the catalogue into easy-to-find groups.</p>
+    </div>
+  <a asp-action="Create" class="btn btn-primary">+ Add category</a>
+</div>
+<div class="row g-3">@foreach (var c in Model) { <div class="col-md-6 col-lg-4">
+    <div class="simple-card">
+      <h3>@c.Name</h3>
+      <p class="text-muted">@c.Description</p>
+      <div class="d-flex justify-content-between">
+        <span>@c.Books.Count book(s)</span>
+        <span>
+          <a asp-action="Edit" asp-route-id="@c.Id">Edit</a> <a class="ms-2 text-danger" asp-action="Delete" asp-route-id="@c.Id">Delete</a>
+        </span>
+    </div>
+</div>
+</div>}</div>

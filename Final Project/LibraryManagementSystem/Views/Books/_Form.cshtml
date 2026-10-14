@@ -1,0 +1,70 @@
+@model Book
+<div asp-validation-summary="ModelOnly" class="text-danger">
+</div>
+<div class="row">
+  <div class="col-md-3 mb-3">
+    <label asp-for="Price" class="form-label"></label>
+    <input asp-for="Price" class="form-control" step="0.01" />
+    <span asp-validation-for="Price" class="text-danger"></span>
+  </div>
+  <div class="col-md-3 mb-3">
+    <label asp-for="BorrowingFee" class="form-label"></label>
+    <input asp-for="BorrowingFee" class="form-control" step="0.01" />
+    <span asp-validation-for="BorrowingFee" class="text-danger"></span>
+  </div>
+  <div class="col-md-3 mb-3">
+    <label asp-for="BorrowingPeriodDays" class="form-label"></label>
+    <input asp-for="BorrowingPeriodDays" class="form-control" />
+    <span asp-validation-for="BorrowingPeriodDays" class="text-danger"></span>
+  </div>
+  <div class="col-md-3 mb-3">
+    <label asp-for="DailyFineRate" class="form-label"></label>
+    <input asp-for="DailyFineRate" class="form-control" step="0.01" />
+    <span asp-validation-for="DailyFineRate" class="text-danger"></span>
+  </div>
+</div>
+<div class="mb-3">
+  <label asp-for="Title" class="form-label">
+  </label>
+<input asp-for="Title" class="form-control" />
+<span asp-validation-for="Title" class="text-danger">
+</span>
+</div>
+<div class="mb-3">
+  <label asp-for="Author" class="form-label">
+  </label>
+<input asp-for="Author" class="form-control" />
+<span asp-validation-for="Author" class="text-danger">
+</span>
+</div>
+<div class="mb-3">
+  <label asp-for="ISBN" class="form-label">
+  </label>
+<input asp-for="ISBN" class="form-control" />
+<span asp-validation-for="ISBN" class="text-danger">
+</span>
+</div>
+<div class="row">
+  <div class="col-md-4 mb-3">
+    <label asp-for="CategoryId" class="form-label">
+    </label>
+  <select asp-for="CategoryId" class="form-select">
+    <option value="">Choose...</option>@foreach (var c in (IEnumerable<Category>)ViewBag.Categories) { <option value="@c.Id">@c.Name</option> }</select>
+    <span asp-validation-for="CategoryId" class="text-danger">
+    </span>
+</div>
+<div class="col-md-4 mb-3">
+  <label asp-for="TotalCopies" class="form-label">
+  </label>
+<input asp-for="TotalCopies" class="form-control" />
+<span asp-validation-for="TotalCopies" class="text-danger">
+</span>
+</div>
+<div class="col-md-4 mb-3">
+  <label asp-for="AvailableCopies" class="form-label">
+  </label>
+<input asp-for="AvailableCopies" class="form-control" />
+<span asp-validation-for="AvailableCopies" class="text-danger">
+</span>
+</div>
+</div>

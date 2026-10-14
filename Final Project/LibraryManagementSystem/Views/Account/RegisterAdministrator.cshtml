@@ -1,0 +1,13 @@
+@model RegisterViewModel
+@{ ViewData["Title"] = "Register administrator"; }
+<div class="form-shell">
+    <h1>Register administrator</h1>
+    <p class="text-muted">Only an existing administrator can create another administrator account.</p>
+    <form asp-action="RegisterAdministrator" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="mb-3"><label asp-for="Username" class="form-label"></label><input asp-for="Username" class="form-control" /><span asp-validation-for="Username" class="text-danger"></span></div>
+        <div class="mb-3"><label asp-for="Password" class="form-label"></label><input asp-for="Password" class="form-control" /><span asp-validation-for="Password" class="text-danger"></span></div>
+        <div class="mb-3"><label asp-for="ConfirmPassword" class="form-label"></label><input asp-for="ConfirmPassword" class="form-control" /><span asp-validation-for="ConfirmPassword" class="text-danger"></span></div>
+        <button class="btn btn-primary">Create administrator</button>
+    </form>
+</div>

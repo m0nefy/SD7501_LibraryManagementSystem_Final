@@ -1,0 +1,10 @@
+@model Book
+@{ ViewData["Title"] = "Edit book"; }<div class="form-shell">
+  <p class="eyebrow">CATALOGUE</p>
+  <h1>Edit book</h1>
+  <form asp-action="Edit" class="mt-4">
+    <input type="hidden" asp-for="Id" />
+    <partial name="_Form" model="Model" />
+    <button class="btn btn-primary">Save changes</button> <a asp-action="Index" class="btn btn-link">Cancel</a>
+  </form>
+</div>

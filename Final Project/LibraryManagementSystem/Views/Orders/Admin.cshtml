@@ -1,0 +1,56 @@
+@model IEnumerable<BorrowingOrder>
+@{
+    ViewData["Title"] = "Order review";
+}
+
+<h1 class="section-title">Order review</h1>
+<p class="text-muted">For each return request, select how many copies of each book should be rejected. The remaining copies will be returned normally.</p>
+
+@foreach (var order in Model)
+{
+    <div class="card mb-3 p-3">
+        <div class="d-flex justify-content-between"><strong>Order #@order.Id · @order.ReaderName</strong><span class="badge text-bg-secondary">@order.Status</span></div>
+        <div class="small text-muted mb-2">Due @order.DueDate.ToString("yyyy-MM-dd")</div>
+        @if (order.Items.Any())
+        {
+            <ul class="mb-3">
+                @foreach (var item in order.Items)
+                {
+                    <li>
+                        @(item.Book?.Title ?? item.BookTitle ?? "Deleted book") × @item.Quantity
+                        @if (item.ReturnedQuantity > 0 || item.RejectedQuantity > 0)
+                        {
+                            <span class="text-muted small">(returned @item.ReturnedQuantity, rejected @item.RejectedQuantity)</span>
+                        }
+                    </li>
+                }
+            </ul>
+        }
+        @if (order.Status == OrderStatus.ReturnRequested)
+        {
+            <form asp-action="ProcessReturn" method="post">
+                <input type="hidden" name="id" value="@order.Id" />
+                <div class="table-responsive">
+                    <table class="table table-sm align-middle">
+                        <thead><tr><th>Book</th><th>Requested return</th><th>Reject copies</th><th>Accepted return</th></tr></thead>
+                        <tbody>
+                        @foreach (var item in order.Items)
+                        {
+                            <tr>
+                                <td>@(item.Book?.Title ?? item.BookTitle ?? "Deleted book")</td>
+                                <td>@item.ReturnRequestedQuantity</td>
+                                <td><input class="form-control form-control-sm" type="number" name="rejectedQuantities[@item.Id]" min="0" max="@item.ReturnRequestedQuantity" value="0" /></td>
+                                <td>@item.ReturnRequestedQuantity accepted by default</td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="d-flex gap-2 flex-wrap">
+                    <input class="form-control" name="reason" placeholder="Reason if any copies are rejected" />
+                    <button class="btn btn-success btn-sm">Process return</button>
+                </div>
+            </form>
+        }
+    </div>
+}

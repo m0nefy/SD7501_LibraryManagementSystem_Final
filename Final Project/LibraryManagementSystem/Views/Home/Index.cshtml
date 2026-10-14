@@ -1,0 +1,56 @@
+@model IEnumerable<Book>
+  @{ ViewData["Title"] = "Find a book"; var cats = (IEnumerable<Category>)ViewBag.Categories; }
+    <div class="hero">
+      <div>
+        <p class="eyebrow">LIBRARY CATALOGUE</p>
+        <h1>Find your next<br />
+          <span>good read.</span>
+        </h1>
+      <p class="lead">Search our collection by title, author, or category.</p>
+    </div>
+  <div class="hero-stat">
+    <strong>@Model.Count()</strong>
+    <small>matching titles</small>
+  </div>
+</div>
+<form method="get" class="search-panel row g-2 align-items-end">
+  <div class="col-md-7">
+    <label class="form-label">Search</label>
+    <input name="search" value="@ViewBag.Search" class="form-control form-control-lg" placeholder="e.g. Clean Code, Hawking..." />
+  </div>
+<div class="col-md-3">
+  <label class="form-label">Category</label>
+  <select name="categoryId" class="form-select form-select-lg">
+    <option value="">All categories</option>@foreach (var c in cats) { <option value="@c.Id" selected="@(ViewBag.CategoryId?.ToString() == c.Id.ToString())">@c.Name</option> }</select>
+</div>
+<div class="col-md-2">
+  <button class="btn btn-primary btn-lg w-100">Search</button>
+</div>
+</form>
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2 class="section-title">Available collection</h2>
+</div>
+<div class="row g-3">@foreach (var book in Model) { <div class="col-md-6 col-xl-4">
+    <div class="book-card h-100">
+      <div class="book-cover">@(book.Title.Length > 0 ? book.Title[..1].ToUpper() : "B")</div>
+      <div class="book-content">
+        <span class="badge-soft">@book.Category?.Name</span>
+        <h3>@book.Title</h3>
+        <p class="text-muted mb-2">@book.Author</p>
+        <div class="d-flex justify-content-between align-items-center">
+          <span class="stock @(book.AvailableCopies > 0 ? "in-stock" : "out-stock")">@(book.AvailableCopies > 0 ? $"{book.AvailableCopies} available" : "Currently unavailable")</span>
+          <div class="d-flex gap-2 align-items-center">
+            <a asp-controller="Books" asp-action="Details" asp-route-id="@book.Id">Details &rarr;</a>
+            @if (book.AvailableCopies > 0)
+            {
+              <form asp-controller="Cart" asp-action="Add" method="post" class="d-flex gap-1 align-items-center">
+                <input type="hidden" name="id" value="@book.Id" />
+                <input class="form-control form-control-sm" style="width: 68px" type="number" name="quantity" min="1" max="@book.AvailableCopies" value="1" aria-label="Quantity" />
+                <button class="btn btn-sm btn-primary">Add to cart</button>
+              </form>
+            }
+          </div>
+        </div>
+    </div>
+</div>
+</div> }</div>@if (!Model.Any()) { <div class="empty-state">No books matched your search. Try another title, author, or category.</div> }

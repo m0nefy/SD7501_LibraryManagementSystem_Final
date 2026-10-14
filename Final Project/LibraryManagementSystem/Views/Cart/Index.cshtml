@@ -1,0 +1,46 @@
+@model CartViewModel
+@{
+    ViewData["Title"] = "Shopping cart";
+}
+
+<h1 class="section-title">Borrowing cart</h1>
+<p class="text-muted">Check the requested copies and submit the borrowing order.</p>
+
+@if (!Model.Items.Any())
+{
+    <div class="empty-state">Your cart is empty. <a asp-controller="Home" asp-action="Index">Search for books</a>.</div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead><tr><th>Book</th><th>Copies</th><th>Borrowing fee</th><th></th></tr></thead>
+            <tbody>
+            @foreach (var item in Model.Items)
+            {
+                <tr>
+                    <td>@item.Book.Title<br /><small class="text-muted">@item.Book.Author</small></td>
+                    <td>@item.Quantity</td>
+                    <td>@item.TotalBorrowingFee.ToString("C")</td>
+                    <td>
+                        <form asp-action="Remove" method="post">
+                            <input type="hidden" name="id" value="@item.Book.Id" />
+                            <button class="btn btn-sm btn-outline-danger">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+    <div class="card p-3 mb-3">
+        <div class="d-flex justify-content-between"><strong>Total borrowing fee</strong><strong>@Model.TotalBorrowingFee.ToString("C")</strong></div>
+    </div>
+    <form asp-controller="Orders" asp-action="Checkout" method="get" class="card p-3">
+        <div class="d-flex gap-2">
+            <button class="btn btn-primary">Continue to payment</button>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">Continue searching</a>
+        </div>
+    </form>
+    <form asp-action="Clear" method="post" class="mt-2"><button class="btn btn-link text-danger px-0">Clear cart</button></form>
+}

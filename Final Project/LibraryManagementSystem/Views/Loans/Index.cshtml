@@ -1,0 +1,41 @@
+@model IEnumerable<Loan>
+  @{ ViewData["Title"] = "Loans"; }<div class="page-heading">
+    <div>
+      <p class="eyebrow">CIRCULATION</p>
+      <h1>Borrowing desk</h1>
+      <p class="text-muted">Track active loans, renewals, and returns.</p>
+    </div>
+  <a asp-action="Create" class="btn btn-primary">+ Borrow a book</a>
+</div>
+<div class="table-card">
+  <table class="table align-middle mb-0">
+    <thead>
+      <tr>
+        <th>Reader</th>
+        <th>Book</th>
+        <th>Borrowed</th>
+        <th>Due date</th>
+        <th>Status</th>
+        <th>
+        </th>
+    </tr>
+</thead>
+<tbody>@foreach (var l in Model) { <tr>
+    <td class="fw-semibold">@l.ReaderName</td>
+    <td>@l.Book?.Title</td>
+    <td>@l.BorrowedAt.ToString("dd MMM yyyy")</td>
+    <td>@l.DueDate.ToString("dd MMM yyyy")</td>
+    <td>
+      <span class="status @(l.Status == LoanStatus.Borrowed ? "status-active" : "status-returned")">@l.Status</span>
+    </td>
+  <td class="text-end">@if (l.Status == LoanStatus.Borrowed) { <form asp-action="Renew" method="post" class="d-inline">
+      <input type="hidden" name="id" value="@l.Id" />
+      <button class="btn btn-sm btn-link">Renew</button>
+    </form>
+  <form asp-action="Return" method="post" class="d-inline">
+    <input type="hidden" name="id" value="@l.Id" />
+    <button class="btn btn-sm btn-link">Return</button>
+  </form> }</td>
+</tr>}</tbody>
+</table>
+</div>@if (!Model.Any()) { <div class="empty-state">No loans recorded yet.</div> }

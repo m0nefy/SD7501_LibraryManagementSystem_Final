@@ -1,0 +1,279 @@
+:root {
+    --ink: #20313b;
+    --muted: #6e7c84;
+    --line: #e5ecee;
+    --blue: #236b78;
+    --pale: #f4f8f8;
+}
+
+body {
+    font-family: Inter, Segoe UI, Arial, sans-serif;
+    color: var(--ink);
+    background: #fbfcfc;
+}
+
+.navbar-brand {
+    color: var(--ink);
+}
+
+.brand-mark {
+    display: inline-grid;
+    place-items: center;
+    background: var(--blue);
+    color: #fff;
+    border-radius: 8px;
+    font-size: 12px;
+    width: 30px;
+    height: 30px;
+    margin-right: 7px;
+}
+
+.nav-link {
+    color: #53646b;
+    margin-left: 16px;
+}
+
+    .nav-link:hover,
+    a {
+        color: var(--blue);
+    }
+
+h1 {
+    font-size: 2.5rem;
+    letter-spacing: -1px;
+    font-weight: 700;
+}
+
+h2.section-title {
+    font-size: 1.35rem;
+    margin: 0;
+}
+
+.eyebrow {
+    font-size: .73rem;
+    letter-spacing: 1.8px;
+    font-weight: 700;
+    color: var(--blue);
+    margin-bottom: .6rem;
+}
+
+.hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    background: var(--pale);
+    border-radius: 16px;
+    padding: 42px 46px;
+    margin-bottom: 20px;
+}
+
+    .hero h1 {
+        font-size: 3.6rem;
+        margin: 0 0 12px;
+    }
+
+        .hero h1 span {
+            color: var(--blue);
+        }
+
+.hero-stat {
+    border-left: 1px solid #cbdcdf;
+    padding-left: 35px;
+    min-width: 130px;
+}
+
+    .hero-stat strong {
+        display: block;
+        font-size: 2.5rem;
+    }
+
+    .hero-stat small {
+        color: var(--muted);
+    }
+
+.search-panel {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 38px;
+    box-shadow: 0 4px 15px #18343a08;
+}
+
+.book-card {
+    display: flex;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.book-cover {
+    background: #dcecee;
+    color: var(--blue);
+    font-size: 3rem;
+    font-weight: 700;
+    width: 92px;
+    display: grid;
+    place-items: center;
+}
+
+.book-content {
+    padding: 18px;
+    flex: 1;
+}
+
+    .book-content h3 {
+        font-size: 1.15rem;
+        margin: 10px 0 4px;
+    }
+
+.badge-soft {
+    background: #e9f3f3;
+    color: var(--blue);
+    padding: 4px 8px;
+    border-radius: 5px;
+    font-size: .75rem;
+    font-weight: 600;
+}
+
+.stock {
+    font-size: .8rem;
+    font-weight: 600;
+}
+
+.in-stock {
+    color: #2f8167;
+}
+
+.out-stock {
+    color: #b45a4e;
+}
+
+.page-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 26px;
+}
+
+    .page-heading h1 {
+        margin: 0;
+    }
+
+.table-card,
+.simple-card,
+.form-shell {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+}
+
+.table-card {
+    overflow: hidden;
+}
+
+.table {
+    --bs-table-bg: transparent;
+    margin: 0;
+}
+
+    .table th {
+        background: #f7f9f9;
+        color: var(--muted);
+        font-size: .78rem;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+    }
+
+    .table td,
+    .table th {
+        padding: 16px 18px;
+        border-color: var(--line);
+    }
+
+.simple-card {
+    padding: 22px;
+}
+
+    .simple-card h3 {
+        font-size: 1.15rem;
+    }
+
+.form-shell {
+    max-width: 680px;
+    padding: 32px;
+}
+
+    .form-shell h1 {
+        margin-bottom: 0;
+    }
+
+.form-control,
+.form-select {
+    border-color: #d5e0e2;
+    padding: .65rem .8rem;
+}
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: var(--blue);
+        box-shadow: 0 0 0 .2rem #236b7820;
+    }
+
+.status {
+    font-size: .78rem;
+    padding: 5px 9px;
+    border-radius: 20px;
+}
+
+.status-active {
+    background: #fff3d7;
+    color: #956b15;
+}
+
+.status-returned {
+    background: #e5f4ed;
+    color: #327459;
+}
+
+.empty-state {
+    text-align: center;
+    background: var(--pale);
+    padding: 38px;
+    border-radius: 12px;
+    color: var(--muted);
+}
+
+footer {
+    background: #fff;
+}
+
+@media (max-width: 600px) {
+    .hero {
+        padding: 28px;
+        display: block;
+    }
+
+        .hero h1 {
+            font-size: 2.6rem;
+        }
+
+    .hero-stat {
+        border: 0;
+        padding: 20px 0 0;
+    }
+
+    .page-heading {
+        align-items: start;
+        gap: 15px;
+    }
+
+    .table-card {
+        overflow-x: auto;
+    }
+
+    .form-shell {
+        padding: 22px;
+    }
+}

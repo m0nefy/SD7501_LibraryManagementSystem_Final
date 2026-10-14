@@ -1,0 +1,18 @@
+@model Book
+@{
+    ViewData["Title"] = "Delete book";
+}
+
+<div class="form-shell">
+    <p class="eyebrow">CONFIRM ACTION</p>
+    <h1>Delete @Model.Title?</h1>
+    <p class="text-muted">
+        A book can only be deleted when it has no loan or borrowing-order history.
+        Books referenced by past orders must be kept so that order records remain accurate.
+    </p>
+    <form asp-action="Delete" method="post">
+        <input type="hidden" asp-for="Id" />
+        <button class="btn btn-danger">Delete book</button>
+        <a asp-action="Index" class="btn btn-link">Cancel</a>
+    </form>
+</div>
