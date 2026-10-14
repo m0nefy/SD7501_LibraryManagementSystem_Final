@@ -67,6 +67,9 @@ public class BorrowingOrderItem
 
     public DateTime? DueDate { get; set; }
     public decimal FineAmount { get; set; }
+    // Fine payments are tracked per order item so a payment for one returned
+    // book cannot reduce the amount due for other outstanding books.
+    public decimal FinePaidAmount { get; set; }
 
     public int ReturnRequestedQuantity { get; set; }
 

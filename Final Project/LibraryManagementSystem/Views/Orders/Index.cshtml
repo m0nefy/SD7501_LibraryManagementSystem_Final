@@ -53,8 +53,8 @@
         }
         @if (order.Status == OrderStatus.Overdue || order.Status == OrderStatus.ReturnRequested)
         {
-            var paidFine = order.Payments.Where(p => p.Type == PaymentType.Fine).Sum(p => p.Amount);
-            @if (order.FineAmount > paidFine)
+            var unpaidFine = order.Items.Sum(i => Math.Max(0m, i.FineAmount - i.FinePaidAmount));
+            @if (unpaidFine > 0.005m)
             {
                 <form asp-action="PayFine" method="post" class="d-inline ms-2">
                     <input type="hidden" name="id" value="@order.Id" />

@@ -26,6 +26,7 @@ public class LibraryDbContext(DbContextOptions<LibraryDbContext> options) : DbCo
         modelBuilder.Entity<BorrowingOrderItem>().Property(i => i.UnitBookPrice).HasPrecision(18, 2);
         modelBuilder.Entity<BorrowingOrderItem>().Property(i => i.DailyFineRate).HasPrecision(18, 2);
         modelBuilder.Entity<BorrowingOrderItem>().Property(i => i.FineAmount).HasPrecision(18, 2);
+        modelBuilder.Entity<BorrowingOrderItem>().Property(i => i.FinePaidAmount).HasPrecision(18, 2);
         modelBuilder.Entity<Payment>().Property(p => p.Amount).HasPrecision(18, 2);
         modelBuilder.Entity<Payment>().HasIndex(p => p.StripeSessionId).HasFilter("[StripeSessionId] IS NOT NULL");
         modelBuilder.Entity<Book>().HasIndex(b => b.ISBN).IsUnique().HasFilter("[ISBN] IS NOT NULL");

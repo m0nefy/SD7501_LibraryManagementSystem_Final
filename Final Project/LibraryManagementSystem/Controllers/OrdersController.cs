@@ -182,14 +182,17 @@ public class OrdersController(LibraryDbContext db, IConfiguration configuration)
         var order = await db.BorrowingOrders.Include(o => o.Payments).Include(o => o.Items).FirstOrDefaultAsync(o => o.Id == orderId && o.ReaderName == User.Identity!.Name);
         if (order == null) return NotFound();
         if (order.Payments.Any(p => p.StripeSessionId == session.Id)) return RedirectToAction(nameof(Index));
-        var paidBefore = order.Payments.Where(p => p.Type == paymentType).Sum(p => p.Amount);
-        var expected = paymentType == PaymentType.BookCharge ? order.BookChargeAmount : order.FineAmount - paidBefore;
+        var expected = paymentType == PaymentType.BookCharge ? order.BookChargeAmount : GetUnpaidFine(order);
         if (expected < 0.50m || session.AmountTotal != ToMinorUnits(expected))
         {
             TempData["Error"] = "The Stripe amount does not match the order amount.";
             return RedirectToAction(nameof(Index));
         }
         order.Payments.Add(new Payment { Type = paymentType, Amount = expected, StripeSessionId = session.Id });
+        if (paymentType == PaymentType.Fine)
+        {
+            ApplyFinePayment(order, expected);
+        }
         if (paymentType == PaymentType.BookCharge)
         {
             order.BookChargeAmount = 0;
@@ -245,8 +248,7 @@ public class OrdersController(LibraryDbContext db, IConfiguration configuration)
         var order = await db.BorrowingOrders.Include(o => o.Items).ThenInclude(i => i.Book).Include(o => o.Payments).FirstOrDefaultAsync(o => o.Id == id);
         if (order == null || order.Status != OrderStatus.ReturnRequested) return NotFound();
 
-        var finePaid = order.Payments.Where(p => p.Type == PaymentType.Fine).Sum(p => p.Amount);
-        if (order.FineAmount > finePaid)
+        if (GetUnpaidFine(order) > 0.005m)
         {
             TempData["Error"] = "The overdue fine must be paid before this return can be processed.";
             return RedirectToAction(nameof(Admin));
@@ -266,6 +268,9 @@ public class OrdersController(LibraryDbContext db, IConfiguration configuration)
             item.RejectedQuantity += rejected;
             item.ReturnedQuantity += requested - rejected;
             item.ReturnRequestedQuantity = 0;
+            // The fine paid for this return batch belongs to these copies.
+            // Do not let it reduce the next fine for the copies still out.
+            item.FinePaidAmount = 0;
             item.RejectionReason = rejected > 0 ? (string.IsNullOrWhiteSpace(reason) ? "The book did not meet the return condition." : reason.Trim()) : null;
             item.Book!.AvailableCopies += requested - rejected;
             rejectedTotal += rejected;
@@ -298,15 +303,19 @@ public class OrdersController(LibraryDbContext db, IConfiguration configuration)
     {
         var order = await db.BorrowingOrders.Include(o => o.Items).ThenInclude(i => i.Book).Include(o => o.Payments).FirstOrDefaultAsync(o => o.Id == id);
         if (order == null || order.Status != OrderStatus.ReturnRequested) return NotFound();
-        var finePaid = order.Payments.Where(p => p.Type == PaymentType.Fine).Sum(p => p.Amount);
-        if (order.FineAmount > finePaid)
+        if (GetUnpaidFine(order) > 0.005m)
         {
             TempData["Error"] = "The overdue fine must be paid before this return can be completed.";
             return RedirectToAction(nameof(Admin));
         }
         order.Status = OrderStatus.Completed;
         order.ReturnedAt = DateTime.Today;
-        foreach (var item in order.Items) item.Book!.AvailableCopies += item.Quantity;
+        foreach (var item in order.Items)
+        {
+            item.Book!.AvailableCopies += item.Quantity - item.ReturnedQuantity - item.RejectedQuantity;
+            item.ReturnedQuantity = item.Quantity - item.RejectedQuantity;
+            item.FinePaidAmount = 0;
+        }
         await db.SaveChangesAsync();
         TempData["Success"] = "Return approved and stock restored.";
         return RedirectToAction(nameof(Admin));
@@ -340,10 +349,9 @@ public class OrdersController(LibraryDbContext db, IConfiguration configuration)
     public async Task<IActionResult> PayFine(int id)
     {
         var readerName = User.Identity!.Name!;
-        var order = await db.BorrowingOrders.Include(o => o.Payments).FirstOrDefaultAsync(o => o.Id == id && o.ReaderName == readerName && (o.Status == OrderStatus.Overdue || o.Status == OrderStatus.ReturnRequested));
+        var order = await db.BorrowingOrders.Include(o => o.Payments).Include(o => o.Items).FirstOrDefaultAsync(o => o.Id == id && o.ReaderName == readerName && (o.Status == OrderStatus.Overdue || o.Status == OrderStatus.ReturnRequested));
         if (order == null) return NotFound();
-        var paid = order.Payments.Where(p => p.Type == PaymentType.Fine).Sum(p => p.Amount);
-        return await CreateAdditionalPaymentSession(order, PaymentType.Fine, order.FineAmount - paid);
+        return await CreateAdditionalPaymentSession(order, PaymentType.Fine, GetUnpaidFine(order));
     }
 
     private async Task<IActionResult> CreateAdditionalPaymentSession(BorrowingOrder order, PaymentType paymentType, decimal amount)
@@ -425,6 +433,21 @@ public class OrdersController(LibraryDbContext db, IConfiguration configuration)
         var activeItems = order.Items.Where(i => i.Quantity - i.ReturnedQuantity - i.RejectedQuantity > 0).ToList();
         if (activeItems.Count == 0) return OrderStatus.Completed;
         return activeItems.Any(i => (i.DueDate ?? order.DueDate) < DateTime.Today) ? OrderStatus.Overdue : OrderStatus.Borrowing;
+    }
+
+    private static decimal GetUnpaidFine(BorrowingOrder order) =>
+        order.Items.Sum(i => Math.Max(0m, i.FineAmount - i.FinePaidAmount));
+
+    private static void ApplyFinePayment(BorrowingOrder order, decimal amount)
+    {
+        foreach (var item in order.Items.OrderBy(i => i.Id))
+        {
+            var unpaid = Math.Max(0m, item.FineAmount - item.FinePaidAmount);
+            var applied = Math.Min(unpaid, amount);
+            item.FinePaidAmount += applied;
+            amount -= applied;
+            if (amount <= 0m) break;
+        }
     }
 
     private Task<bool> HasBorrowingBlockAsync() =>

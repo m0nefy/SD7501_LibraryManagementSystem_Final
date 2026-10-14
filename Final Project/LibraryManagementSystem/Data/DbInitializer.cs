@@ -79,6 +79,8 @@ public static class DbInitializer
                 ALTER TABLE [BorrowingOrderItems] ADD [DueDate] datetime2 NULL;
             IF COL_LENGTH(N'BorrowingOrderItems', N'FineAmount') IS NULL AND OBJECT_ID(N'[BorrowingOrderItems]', N'U') IS NOT NULL
                 ALTER TABLE [BorrowingOrderItems] ADD [FineAmount] decimal(18,2) NOT NULL CONSTRAINT [DF_BorrowingOrderItems_FineAmount] DEFAULT 0;
+            IF COL_LENGTH(N'BorrowingOrderItems', N'FinePaidAmount') IS NULL AND OBJECT_ID(N'[BorrowingOrderItems]', N'U') IS NOT NULL
+                ALTER TABLE [BorrowingOrderItems] ADD [FinePaidAmount] decimal(18,2) NOT NULL CONSTRAINT [DF_BorrowingOrderItems_FinePaidAmount] DEFAULT 0;
             IF COL_LENGTH(N'BorrowingOrderItems', N'ReturnRequestedQuantity') IS NULL AND OBJECT_ID(N'[BorrowingOrderItems]', N'U') IS NOT NULL
                 ALTER TABLE [BorrowingOrderItems] ADD [ReturnRequestedQuantity] int NOT NULL CONSTRAINT [DF_BorrowingOrderItems_ReturnRequestedQuantity] DEFAULT 0;
             IF COL_LENGTH(N'BorrowingOrderItems', N'BookTitle') IS NULL AND OBJECT_ID(N'[BorrowingOrderItems]', N'U') IS NOT NULL
@@ -119,6 +121,7 @@ public static class DbInitializer
                     [RejectionReason] nvarchar(250) NULL,
                     [DueDate] datetime2 NULL,
                     [FineAmount] decimal(18,2) NOT NULL,
+                    [FinePaidAmount] decimal(18,2) NOT NULL CONSTRAINT [DF_BorrowingOrderItems_FinePaidAmount] DEFAULT 0,
                     [ReturnRequestedQuantity] int NOT NULL,
                     CONSTRAINT [FK_BorrowingOrderItems_BorrowingOrders_BorrowingOrderId] FOREIGN KEY ([BorrowingOrderId]) REFERENCES [BorrowingOrders] ([Id]) ON DELETE CASCADE,
                     CONSTRAINT [FK_BorrowingOrderItems_Books_BookId] FOREIGN KEY ([BookId]) REFERENCES [Books] ([Id]) ON DELETE SET NULL
